@@ -1,0 +1,665 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una luz para ti ♡</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #101323;
+            color: #f8e8c8;
+            font-family: Georgia, serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            transition: background 1.5s ease;   
+        }
+
+        .habitacion {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 15px;
+        }
+
+        .instruccion {
+            color: #b9b4c9;
+            margin-bottom: 65px;
+        }
+
+        /* Lámpara */
+
+        .lampara {
+            width: 180px;
+            height: 240px;
+            margin: auto;
+            position: relative;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            display: block;
+        }
+
+        .pantalla {
+            position: absolute;
+            width: 140px;
+            height: 105px;
+            background: #555064;
+            top: 15px;
+            left: 20px;
+            clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%);
+            transition: background 1s, filter 1s;
+        }
+
+        .cuello {
+            position: absolute;
+            width: 12px;
+            height: 65px;
+            background: #9c8a68;
+            top: 115px;
+            left: 84px;
+        }
+
+        .base {
+            position: absolute;
+            width: 95px;
+            height: 20px;
+            background: #b19b76;
+            border-radius: 50%;
+            bottom: 25px;
+            left: 42px;
+        }
+
+        /* Luz ambiental */
+
+        .resplandor {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(
+                circle,
+                rgba(255, 190, 90, 0.35),
+                rgba(255, 190, 90, 0.08) 45%,
+                transparent 70%
+            );
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s;
+            z-index: -1;
+        }
+
+        /* Mensaje */
+
+        .mensaje {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.5s;
+            
+            margin: 35px auto 0;
+            max-width: 850px;
+            text-align: center;
+        }
+
+        .mensaje h2 {
+            color: #ffdc9c;
+            margin-bottom: 12px;
+            font-weight: normal;
+        }
+
+        .mensaje p {
+            color: #e8d9bd;
+            line-height: 1.7;
+        }
+
+        /* Estado encendido */
+        
+        body.encendida {
+            background: #30271f;
+        }
+
+        body.encendida .pantalla {
+            background: #ffdc91;
+            filter: drop-shadow(0 0 25px #ffc15b);
+        }
+
+        body.encendida .resplandor {
+            opacity: 1;
+        }
+
+        body.encendida .mensaje {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .lampara:focus-visible {
+            outline: 2px solid #ffdc91;
+            outline-offset: 8px;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .resplandor {
+                width: 330px;
+                height: 330px;
+            }
+        }
+
+        /* Distribucion de lampara y musica */
+
+        .habitacion {
+            width: min(1000px, 94vw);
+        }
+
+        .escena {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 45px;
+            flex-wrap: wrap;
+        }
+
+        .zona-lampara {
+            position: relative;
+        }
+
+        .reproductor {
+            width: 340px;
+            max-width: 90vw;
+            background: rgba(225, 255, 255, 0.07);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 220, 160, 0.2);
+
+            opacity: 0;
+            transform: translateX(25px);
+            pointer-events: none;
+            transition: all 1.5s ease;
+        }
+
+        .reproductor h2 {
+            color: #ffdc9c;
+            font-weight: normal;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .reproductor iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 10px;
+        }
+
+        body.encendida .reproductor {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        @media (max-width: 650px) {
+            .escena {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .reproductor {
+                width: 310px;
+                max-width: 90vw;
+            }
+
+            .instruccion {
+                margin-bottom: 25px;
+            }
+        }
+
+        /* REPRODUCTOR DE VINILO */
+
+        .reproductor {
+            width: 340px;
+            padding: 22px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 220, 160, 0.25);
+
+            opacity: 0;
+            transform: translateX(25px);
+            pointer-events: none;
+            transition: all 1.5s ease;
+        }
+
+        body.encendida .reproductor {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .vinilo {
+            width: 230px;
+            height: 230px;
+            margin: 20px auto;
+            border-radius: 50%;
+
+            background: 
+                repeating-radial-gradient(
+                    circle,
+                    #171717 0px,
+                    #292929 2px,
+                    #111111 4px,
+                    #242424 6px
+                );
+            
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            
+            position: relative;
+            overflow: hidden;
+        }
+
+        .etiqueta-disco {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #c9a46b;
+        }
+
+        .etiqueta-disco img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .vinilo.reproduciendo {
+            animation: girar 3s linear infinite;
+            animation-play-state: running;
+        }
+
+        @keyframes girar {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .reproductor h2 {
+            color: #ffdc9c;
+            font-weight: normal;
+        }
+
+        .reproductor h3 {
+            color: #ffe1ae;
+            font-size: 18px;
+        }
+
+        .artista {
+            color: #c7b8a1;
+            margin-top: 5px;
+        }
+
+        .boton-musica {
+            background: #a47a48;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+
+        .boton-musica:hover {
+            background: #c69a60;
+        }
+
+        /* BARRA DE PROGRESO MUSICAL */
+
+        .progreso-musica {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .tiempos {
+            display: flex;
+            justify-content: space-between;
+            color: #d8c39f;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        #barra-progreso {
+            width: 100%;
+            height: 5px;
+            appearance: none;
+            background: #59452f;
+            border-radius: 10px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #barra-progreso::-webkit-slider-thumb {
+            appearance: none;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: #e2bd78;
+            box-shadow: 0 0 8px #e2bd78;
+        }
+
+        #barra-progreso::-moz-range-thumb {
+            width: 13px;
+            height: 13px;
+            border: none;
+            border-radius: 50%;
+            background: #e2bd78;
+            box-shadow: 0 0 8px #e2bd78;
+        }
+
+        /* REFLEJOS DEL VINILO */
+
+        .vinilo::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: conic-gradient (
+                transparent 0deg,
+                rgba(255, 255, 255, 0.12) 45deg,
+                transparent 90deg,
+                rgba(255, 255, 255, 0.05) 180deg,
+                transparent 240deg,
+                rgba(255, 255, 255, 0.10) 300deg,
+                transparent 360deg
+            );
+            pointer-events: none;
+        }
+
+        /* BRILLO EN LA PORTADA */
+
+        .etiqueta-disco {
+            position: relative;
+            box-shadow: 0 0 12px rgba(226, 189, 120, 0.55);
+        }
+
+        /* ORIFICIO CENTRAL */
+
+        .etiqueta-disco::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #17120d;
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        /* DISEÑO ADAPTABLE PARA CELULARES */
+    @media screen and (max-width: 600px) {
+
+        .escena {
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 15px;
+        }
+
+        .zona-lampara {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .reproductor {
+            width: 100%;
+            max-width: 340px;
+            box-sizing: border-box;
+            padding: 18px;
+        }
+
+        .vinilo {
+            width: min(230px, 65vw);
+            height: min(230px, 65vw);
+        }
+
+        .mensaje {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .mensaje p {
+            line-height: 1.6;
+            overflow-wrap: break-word;
+        }
+
+        body {
+            min-width: 100vh;
+            height: auto;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .habitacion {
+            width: 100%;
+            height: auto;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+
+<main class="habitacion">
+
+    <h1>Hay algo que quiero mostrarte...</h1>
+
+    <p class="instruccion" id="instruccion">
+        Enciende la luz. ♡
+    </p>
+
+    <div class="escena">
+
+        <div class="zona-lampara">
+
+            <button
+                class="lampara"
+                id="lampara"
+                aria-label="Encender o apagar la lámpara"
+                aria-pressed="false"
+            >
+                <div class="pantalla"></div>
+                <div class="cuello"></div>
+                <div class="base"></div>
+            </button>
+
+        </div>
+
+        <div class="reproductor" id="reproductor">
+
+            <h2>Una canción para tí ♡</h2>
+
+            <div class="vinilo" id="vinilo">
+
+                <div class="etiqueta-disco">
+                    <img
+                        src="{% static 'principal/img/portada.jpg' %}"
+                        alt="Portada de nuestra canción"
+                    >
+                </div>
+
+            </div>
+
+            <h3>Sign of the Times</h3>
+            <p class="artista">Harry Styles</p>
+
+            <audio id="audio">
+                <source
+                    src="{% static 'principal/audio/cancion.mp3' %}"
+                    type="audio/mpeg"
+                >
+            </audio>
+
+            <button id="boton-musica" class="boton-musica">
+                ▶ Reproducir
+            </button>
+
+            <div class="progreso-musica">
+                <div class="tiempos">
+                    <span id="tiempo-actual">0:00</span>
+                    <span id="duracion">0:00</span>
+                </div>
+
+                <input
+                    type="range"
+                    id="barra-progreso"
+                    value="0"
+                    min="0"
+                    max="100"
+                >
+            </div>
+
+        </div>
+        
+    </div>
+
+        <section class="mensaje" id="mensaje">
+            <h2>Esta luz es para ti ♡</h2>
+
+            <p>
+                Quería regalarte un pequeño momento especial.
+                <br>
+                Espero que esta luz ilumine tu lindo día
+                tanto como tus bonitos mensajes alegran los mios.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        const lampara = document.getElementById("lampara");
+        const instruccion = document.getElementById("instruccion");
+
+        lampara.addEventListener("click", function () {
+            
+            document.body.classList.toggle("encendida");
+
+            const encendida = document.body.classList.contains("encendida");
+
+            lampara.setAttribute("aria-pressed", encendida);
+
+            if (encendida) {
+                instruccion.textContent = "La luz se ha encendido ♡";
+            } else {
+                instruccion.textContent = "Enciende la luz. ♡";
+            }
+        });
+
+        const audio = document.getElementById("audio");
+        const vinilo = document.getElementById("vinilo");
+        const botonMusica = document.getElementById("boton-musica");
+
+        botonMusica.addEventListener("click", async function() {
+            if (audio.paused) {
+
+                try {
+                    await audio.play();
+
+                } catch (error) {
+                    console.error("Error al reproducir:", error);
+                }
+
+            } else {
+
+                audio.pause();
+            }
+        });
+
+        audio.addEventListener("play", function () {
+            vinilo.style.animationPlayState = "running"
+            vinilo.classList.add("reproduciendo");
+            botonMusica.textContent = "Ⅱ Pausar";
+        });
+
+        audio.addEventListener("pause", function () {
+            vinilo.style.animationPlayState = "paused";
+            botonMusica.textContent = "▶ Reproducir";
+        })
+
+        audio.addEventListener("ended", function () {
+            vinilo.classList.remove("reproduciendo");
+            botonMusica.textContent = "▶ Reproducir";
+
+        });
+
+        const barraProgreso = document.getElementById("barra-progreso");
+        const tiempoActual = document.getElementById("tiempo-actual");
+        const duracion = document.getElementById("duracion");
+
+        function formatoTiempo(segundos) {
+            if (!Number.isFinite(segundos)) return "0:00";
+
+            const minutos = Math.floor(segundos / 60);
+            const segundosRestantes = Math.floor(segundos % 60);
+
+            return minutos + ":" + String(segundosRestantes).padStart(2, "0");
+        }
+
+        audio.addEventListener("loadedmetadata", function () {
+            duracion.textContent = formatoTiempo(audio.duration);
+        });
+
+        audio.addEventListener("timeupdate", function () {
+            if (Number.isFinite(audio.duration) && audio.duration > 0) {
+                barraProgreso.value =
+                    (audio.currentTime / audio.duration) * 100;
+                    
+                tiempoActual.textContent = formatoTiempo(audio.currentTime);
+            }
+        });
+
+        barraProgreso.addEventListener("input", function () {
+            if (Number.isFinite(audio.duration) && audio.duration > 0) {
+                audio.currentTime = 
+                    (barraProgreso.value / 100) * audio.duration;
+            }
+        });
+    </script>
+
+</body>
+</html>
